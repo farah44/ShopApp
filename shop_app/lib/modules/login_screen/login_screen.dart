@@ -1,14 +1,13 @@
-import 'package:conditional_builder/conditional_builder.dart';
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:social_app/layout/main_layout.dart';
-import 'package:social_app/modules/login_screen/cubit/cubit.dart';
-import 'package:social_app/modules/login_screen/cubit/states.dart';
-import 'package:social_app/modules/register_screen/register_screen.dart';
-import 'package:social_app/shared/components/components.dart';
-import 'package:social_app/shared/network/local/cache_helper.dart';
+import 'package:shop_app/layout/main_layout.dart';
+import 'package:shop_app/modules/login_screen/cubit/cubit.dart';
+import 'package:shop_app/modules/login_screen/cubit/states.dart';
+import 'package:shop_app/modules/register_screen/register_screen.dart';
+import 'package:shop_app/shared/components/components.dart';
 
-class SocialLoginScreen extends StatelessWidget {
+class ShopLoginScreen extends StatelessWidget {
   var formKey = GlobalKey<FormState>();
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
@@ -16,30 +15,26 @@ class SocialLoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) => SocialLoginCubit(),
-      child: BlocConsumer<SocialLoginCubit, SocialLoginStates>(
+      create: (BuildContext context) => LoginCubit(),
+      child: BlocConsumer<LoginCubit, LoginStates>(
         listener: (context, state) {
-          if (state is SocialLoginErrorState) {
-            showToast(
-              text: state.error,
-              state: ToastStates.ERROR,
-            );
-          }
-          if (state is SocialLoginSuccessState) {
-            CacheHelper.saveData(
-              key: 'uId',
-              value: state.uId,
-            ).then((value) {
+          if (state is LoginSuccessState) {
+            if (state.loginModel.status) {
+              print(state.loginModel.message);
               navigateAndFinish(
                 context,
-                SocialLayout(),
+                LayoutScreen(),
               );
-            });
+            } else {
+              showToast(
+                text: state.loginModel.message,
+                state: ToastStates.ERROR,
+              );
+            }
           }
         },
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(),
             body: Center(
               child: SingleChildScrollView(
                 child: Padding(
@@ -51,17 +46,17 @@ class SocialLoginScreen extends StatelessWidget {
                       children: [
                         Text(
                           'LOGIN',
-                          style:
-                              Theme.of(context).textTheme.headline4?.copyWith(
-                                    color: Colors.black,
-                                  ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline4!
+                              .copyWith(color: Colors.black),
                         ),
                         Text(
-                          'Login now to communicate with friends',
-                          style:
-                              Theme.of(context).textTheme.bodyText1?.copyWith(
-                                    color: Colors.grey,
-                                  ),
+                          'login now to browse our hot offers ',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .copyWith(color: Colors.grey),
                         ),
                         SizedBox(
                           height: 30.0,
@@ -71,7 +66,7 @@ class SocialLoginScreen extends StatelessWidget {
                           type: TextInputType.emailAddress,
                           validate: (String? value) {
                             if (value!.isEmpty) {
-                              return 'please enter your email address';
+                              return 'Please enter your email address';
                             }
                           },
                           label: 'Email Address',
@@ -83,66 +78,61 @@ class SocialLoginScreen extends StatelessWidget {
                         defaultFormField(
                           controller: passwordController,
                           type: TextInputType.visiblePassword,
-                          suffix: SocialLoginCubit.get(context).suffix,
-                          onSubmit: (value) {
-                            if (formKey.currentState!.validate()) {
-                              // SocialLoginCubit.get(context).userLogin(
-                              //   email: emailController.text,
-                              //   password: passwordController.text,
-                              // );
-                            }
-                          },
-                          isPassword: SocialLoginCubit.get(context).isPassword,
-                          suffixPressed: () {
-                            SocialLoginCubit.get(context)
-                                .changePasswordVisibility();
-                          },
                           validate: (String? value) {
                             if (value!.isEmpty) {
-                              return 'password is too short';
+                              return 'Password is too short';
                             }
                           },
                           label: 'Password',
                           prefix: Icons.lock_outline,
-                        ),
-                        SizedBox(
-                          height: 30.0,
-                        ),
-                        ConditionalBuilder(
-                          condition: state is! SocialLoginLoadingState,
-                          builder: (context) => defaultButton(
-                            function: () {
-                              if (formKey.currentState!.validate()) {
-                                SocialLoginCubit.get(context).userLogin(
+                          suffix: LoginCubit.get(context).suffix,
+                          suffixPressed: () {
+                            LoginCubit.get(context).changePasswordVisibility();
+                          },
+                          onSubmit: (value) {
+                            if (formKey.currentState!.validate()) {
+                              LoginCubit.get(context).userLogin(
                                   email: emailController.text,
-                                  password: passwordController.text,
-                                );
-                              }
-                            },
-                            text: 'login',
-                            isUpperCase: true,
-                          ),
-                          fallback: (context) =>
-                              Center(child: CircularProgressIndicator()),
+                                  password: passwordController.text);
+                            }
+                          },
+                          isPassword: LoginCubit.get(context).isPassword,
                         ),
                         SizedBox(
                           height: 15.0,
                         ),
+                        ConditionalBuilder(
+                          builder: (context) => defaultButton(
+                            function: () {
+                              if (formKey.currentState!.validate()) {
+                                LoginCubit.get(context).userLogin(
+                                    email: emailController.text,
+                                    password: passwordController.text);
+                              }
+                            },
+                            text: 'Login',
+                            isUpperCase: true,
+                          ),
+                          condition: state is! LoginLoadingState,
+                          fallback: (context) =>
+                              Center(child: CircularProgressIndicator()),
+                        ),
+                        SizedBox(
+                          height: 30.0,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              'Don\'t have an account?',
-                            ),
+                            Text('Don\'t have an account?'),
                             defaultTextButton(
                               function: () {
                                 navigateTo(
                                   context,
-                                  SocialRegisterScreen(),
+                                  RegisterScreen(),
                                 );
                               },
-                              text: 'register',
-                            ),
+                              text: 'Register Now ',
+                            )
                           ],
                         ),
                       ],

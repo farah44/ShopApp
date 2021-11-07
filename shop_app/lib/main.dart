@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shop_app/modules/login_screen/login_screen.dart';
+import 'package:shop_app/shared/bloc_observer.dart';
+import 'package:shop_app/shared/network/remote/dio_helper.dart';
 
 void main() {
-  runApp(const MyApp());
+  DioHelper.init();
+  //await CacheHelper.init();
+  Bloc.observer = MyBlocObserver();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -24,7 +31,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: ShopLoginScreen(),
     );
   }
 }
