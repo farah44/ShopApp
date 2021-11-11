@@ -10,6 +10,7 @@ the imported api collection in postman .
 https://www.getpostman.com/collections/94db931dc503afd508a5
 
 <img width="205" alt="ll" src="https://user-images.githubusercontent.com/67971889/141298656-fb7eda19-44df-432d-9c00-88dc36cad6be.PNG"> <img width="206" alt="rr" src="https://user-images.githubusercontent.com/67971889/141298726-4eba7be6-5351-414c-9eb2-57f430a91f31.PNG">
+
 I get all the products and categories from api and use named constructer to convert from json.
 
 <img width="204" alt="home" src="https://user-images.githubusercontent.com/67971889/141298634-97497ed0-0ce0-4242-a19a-2a9907d47b6e.PNG">
