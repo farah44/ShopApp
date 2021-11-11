@@ -22,7 +22,6 @@ class DioHelper {
       'Authorization': token ?? '',
       'Content-Type': 'application/json',
     };
-
     return await dio.get(
       url,
       queryParameters: query,
